@@ -1,0 +1,9 @@
+C:\Project\RestConsumer\obj\Debug\netcoreapp3.1\RestConsumer.csprojAssemblyReference.cache
+C:\Project\RestConsumer\obj\Debug\netcoreapp3.1\RestConsumer.AssemblyInfoInputs.cache
+C:\Project\RestConsumer\obj\Debug\netcoreapp3.1\RestConsumer.AssemblyInfo.cs
+C:\Project\RestConsumer\obj\Debug\netcoreapp3.1\RestConsumer.csproj.CoreCompileInputs.cache
+C:\Project\RestConsumer\bin\Debug\netcoreapp3.1\RestConsumer.deps.json
+C:\Project\RestConsumer\bin\Debug\netcoreapp3.1\RestConsumer.dll
+C:\Project\RestConsumer\bin\Debug\netcoreapp3.1\RestConsumer.pdb
+C:\Project\RestConsumer\obj\Debug\netcoreapp3.1\RestConsumer.dll
+C:\Project\RestConsumer\obj\Debug\netcoreapp3.1\RestConsumer.pdb
