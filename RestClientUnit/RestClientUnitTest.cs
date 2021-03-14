@@ -1,5 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+using System;
 using System.Collections.Generic;
 
 using Xzoo.Rest.Client;
@@ -21,12 +21,13 @@ namespace RestTestSpace
         [TestMethod]
         public void HttpsGetMethod_1()
         {
+            Exception exception = null;
             string url = "https://jsonplaceholder.typicode.com/posts";
             RestMethod method = RestMethod.GET;
 
             AbstractRestRequest apiRequest = new RestRequest(url, method);
             RestConsumer<ICollection<PostBean>> consumer = new RestConsumer<ICollection<PostBean>>(apiRequest);
-            IRestResult<ICollection<PostBean>> apiResult = consumer.Consume();
+            IRestResult<ICollection<PostBean>> apiResult = consumer.Consume(out exception);
 
             Assert.IsTrue(apiResult.Succeed);
             Assert.AreEqual(100, apiResult.ResponseBody.Count);
@@ -36,6 +37,7 @@ namespace RestTestSpace
         [TestMethod]
         public void HttpsPostMethod_1()
         {
+            Exception exception = null;
             string url = "https://jsonplaceholder.typicode.com/posts";
 
             RestMethod method = RestMethod.POST;
@@ -49,7 +51,7 @@ namespace RestTestSpace
 
             AbstractRestRequest apiRequest = new RestRequest(url, method, payloads);
             RestConsumer<PostBean> consumer = new RestConsumer<PostBean>(apiRequest);
-            IRestResult<PostBean> apiResult = consumer.Consume();
+            IRestResult<PostBean> apiResult = consumer.Consume(out exception);
 
             Assert.IsTrue(apiResult.Succeed);
             Assert.AreEqual(1234, apiResult.ResponseBody.UserId);
@@ -58,6 +60,7 @@ namespace RestTestSpace
         [TestMethod]
         public void HttpsPutMethod_1()
         {
+            Exception exception = null;
             string url = "https://jsonplaceholder.typicode.com/posts/12";
 
             RestMethod method = RestMethod.PUT;
@@ -71,7 +74,7 @@ namespace RestTestSpace
 
             AbstractRestRequest apiRequest = new RestRequest(url, method, payloads);
             RestConsumer<PostBean> consumer = new RestConsumer<PostBean>(apiRequest);
-            IRestResult<PostBean> apiResult = consumer.Consume();
+            IRestResult<PostBean> apiResult = consumer.Consume(out exception);
 
             Assert.IsTrue(apiResult.Succeed);
             Assert.AreEqual(12, apiResult.ResponseBody.Id);
@@ -81,15 +84,31 @@ namespace RestTestSpace
         [TestMethod]
         public void HttpsDeleteMethod_1()
         {
+            Exception exception = null;
             string url = "https://jsonplaceholder.typicode.com/posts/12";
             RestMethod method = RestMethod.DELETE;
 
             AbstractRestRequest apiRequest = new RestRequest(url, method);
             RestConsumer<PostBean> consumer = new RestConsumer<PostBean>(apiRequest);
-            IRestResult<PostBean> apiResult = consumer.Consume();
+            IRestResult<PostBean> apiResult = consumer.Consume(out exception);
 
             Assert.IsTrue(apiResult.Succeed);
             Assert.AreEqual(0, apiResult.ResponseBody.Id);
+        }
+
+        [TestMethod]
+        public void HttpsGetMethod_WrongUrl()
+        {
+            Exception exception = null;
+            string url = "https://foo.bar/posts";
+            RestMethod method = RestMethod.GET;
+
+            AbstractRestRequest apiRequest = new RestRequest(url, method);
+            RestConsumer<ICollection<PostBean>> consumer = new RestConsumer<ICollection<PostBean>>(apiRequest);
+            IRestResult<ICollection<PostBean>> apiResult = consumer.Consume(out exception);
+
+            Assert.AreEqual("Socket error", exception.Message);
+
         }
     }
 }

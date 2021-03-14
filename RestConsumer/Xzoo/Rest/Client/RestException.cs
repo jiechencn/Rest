@@ -2,7 +2,7 @@
 
 namespace Xzoo.Rest.Client
 {
-    internal class RestException : Exception
+    public class RestException : Exception
     {
         public RestException(string message) : base(message)
         {

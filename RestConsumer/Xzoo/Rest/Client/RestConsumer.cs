@@ -15,8 +15,9 @@ namespace Xzoo.Rest.Client
         }
         private AbstractRestRequest ApiRequest { get; set; }
         HttpWebRequest RestWebRequest { get; set; }
-        public IRestResult<T> Consume()
+        public IRestResult<T> Consume(out Exception exception)
         {
+            exception = null;
             string endpointUrl = ApiRequest.Url;
             Uri uri = new Uri(endpointUrl);
             RestWebRequest = (HttpWebRequest)WebRequest.Create(uri);
@@ -29,13 +30,14 @@ namespace Xzoo.Rest.Client
             {
                 using (HttpWebResponse webResponse = RestWebRequest.GetResponse() as HttpWebResponse)
                 {
-                    return BuildResult(webResponse);
+                    return BuildResult(webResponse, out exception);
                 }
             }
             catch (Exception ex)
             {
-                
-                throw new RestException("Socket error", ex);
+
+                exception = new RestException("Socket error", ex);
+                return null;
             }
             finally
             {
@@ -44,28 +46,36 @@ namespace Xzoo.Rest.Client
                 RestWebRequest.Abort();
             }
         }
-        private IRestResult<T> BuildResult(HttpWebResponse webResponse)
+        private IRestResult<T> BuildResult(HttpWebResponse webResponse, out Exception exception)
         {
+            exception = null;
             if (webResponse == null)
             {
-                throw new RestException("RestApi reponse is null");
+                exception = new RestException("RestApi reponse is null");
             }
 
             // 泛型 默认值
             T responseData = default;
             bool succeed = false;
 
-            using (Stream responseStream = webResponse.GetResponseStream())
+            try
             {
-                StreamReader reader = new StreamReader(responseStream);
-                string readContent = reader.ReadToEnd();
-
-                // if http returns success
-                if (webResponse.StatusCode < HttpStatusCode.Ambiguous && webResponse.StatusCode >= HttpStatusCode.OK)
+                using (Stream responseStream = webResponse.GetResponseStream())
                 {
-                    succeed = true;
+                    StreamReader reader = new StreamReader(responseStream);
+                    string readContent = reader.ReadToEnd();
+
+                    // if http returns success
+                    if (webResponse.StatusCode < HttpStatusCode.Ambiguous && webResponse.StatusCode >= HttpStatusCode.OK)
+                    {
+                        succeed = true;
+                    }
+                    responseData = JsonConvert.DeserializeObject<T>(readContent);
                 }
-                responseData = JsonConvert.DeserializeObject<T>(readContent);
+            }
+            catch(Exception e)
+            {
+                exception = new RestException("Unable to parse response", e);
             }
 
             return new RestResult<T>(webResponse.StatusCode, succeed, responseData);
